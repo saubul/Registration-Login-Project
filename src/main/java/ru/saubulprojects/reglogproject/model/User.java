@@ -22,22 +22,17 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank(message = "First name is required")
-	@Size(min = 2, message = "Length of first name must be at least 2 symbols")
+
 	@Column(name = "first_name")
 	private String firstName;
 	
-	@NotBlank(message = "Last name is required")
-	@Size(min = 2, message = "Length of last name must be at least 2 symbols")
+
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@Email(message = "Wrong email")
-	@NotBlank(message = "Email is required")
 	@Column(unique = true)
 	private String email;
 	
-	@NotBlank(message = "Password is required")
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -47,4 +42,12 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "role_id_fk"))
 			)
 	private Collection<Role> roles;
+	
+	public User(String firstName, String lastName, String email, String password, Collection<Role> roles) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.roles = roles;
+	}
 }
