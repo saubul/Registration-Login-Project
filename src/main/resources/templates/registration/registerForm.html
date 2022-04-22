@@ -58,10 +58,16 @@
 						
 						<div class = "form-group mb-2">
 							<label class = "control-label" for = "password">Password:</label>
-							<input id = "password" class = "form-control" th:field="*{password}" required/>
+							<input type = "password" id = "password" class = "form-control" th:field="*{password}" required/>
 							<span class="alert alert-danger py-0" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
 						</div>
-
+						
+						<div class = "form-group mb-2"  th:if="${userExist}">
+							<span  class = "alert alert-danger py-1">
+								User is already exist!
+							</span>
+						</div>
+						
 						<div class = "form-group">
 							<button class = "btn btn-success" type = "submit">Register</button>
 							<span>
