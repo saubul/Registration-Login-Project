@@ -17,21 +17,19 @@ import ru.saubulprojects.reglogproject.service.UserService;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	
 	private final UserService userService;
+	private final BCryptPasswordEncoder passEncoder;
 	
-	public SecurityConfiguration(UserService userService) {
+	public SecurityConfiguration(UserService userService, BCryptPasswordEncoder passEncoder) {
 		this.userService = userService;
+		this.passEncoder = passEncoder;
 	}
-	
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+
 	
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
 		auth.setUserDetailsService(userService);
-		auth.setPasswordEncoder(passwordEncoder());
+		auth.setPasswordEncoder(passEncoder);
 		return auth;
 	}
 	
