@@ -1,4 +1,4 @@
-package ru.saubulprojects.reglogproject.web.dto;
+package ru.saubulprojects.reglogproject.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

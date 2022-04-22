@@ -1,25 +1,32 @@
 package ru.saubulprojects.reglogproject.service.impl;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import ru.saubulprojects.reglogproject.dto.UserRegistrationDTO;
 import ru.saubulprojects.reglogproject.model.Role;
 import ru.saubulprojects.reglogproject.model.User;
 import ru.saubulprojects.reglogproject.repository.UserRepository;
 import ru.saubulprojects.reglogproject.service.UserService;
-import ru.saubulprojects.reglogproject.web.dto.UserRegistrationDTO;
 
 @Service
 public class UserServiceImpl implements UserService{
 	
 	private final UserRepository userRepo;
+	private final BCryptPasswordEncoder passEncoder;
 	
-	public UserServiceImpl(UserRepository userRepo) {
+	public UserServiceImpl(UserRepository userRepo, BCryptPasswordEncoder passEncoder) {
 		this.userRepo = userRepo;
+		this.passEncoder = passEncoder;
 	}
 	
 	@Override
@@ -27,7 +34,7 @@ public class UserServiceImpl implements UserService{
 		User user = new User(userDTO.getFirstName(), 
 				   	 		 userDTO.getLastName(), 
 				   	 		 userDTO.getEmail(), 
-				   	 		 userDTO.getPassword(),
+				   	 		 passEncoder.encode(userDTO.getPassword()),
 				   	 		 Arrays.asList(new Role("ROLE_USER")));
 		return userRepo.save(user);
 	}
@@ -40,7 +47,18 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return null;
+		
+		User user = userRepo.findByEmail(username);
+		if(user == null) {
+			throw new UsernameNotFoundException("No user found");
+		}
+		
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+	}
+	
+	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+		
 	}
 	
 }
