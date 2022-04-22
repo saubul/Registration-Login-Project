@@ -1,6 +1,9 @@
 package ru.saubulprojects.reglogproject.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,9 +23,11 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private String name;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "name")
+	private RoleName roleName;
 	
-	public Role(String name) {
-		this.name = name;
+	public enum RoleName {
+		ROLE_USER, ROLE_ADMIN;
 	}
 }
